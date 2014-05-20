@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<onering>
+	<rules>
+		<rule id="1" sequence="1" name="Validate Form">
+			<evaluations type="AllOrNothing">
+				<evaluation id="1" name="Required Email Address" operator="NotEquals">
+					<value1 type="FormField">email_textbox</value1>
+					<value2 type="Static"></value2>
+				</evaluation>
+				<evaluation id="2" name="Validate Email Address Format" operator="IsRegExMatch">
+					<value1 type="FormField">email_textbox</value1>
+					<value2 type="Static"><![CDATA[ \w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)* ]]></value2>
+				</evaluation>
+				<evaluation id="3" name="Required First Name" operator="NotEquals">
+					<value1 type="FormField">fname_textbox</value1>
+					<value2 type="Static"></value2>
+				</evaluation>
+				<evaluation id="4" name="Required Last Name" operator="NotEquals">
+					<value1 type="FormField">lname_textbox</value1>
+					<value2 type="Static"></value2>
+				</evaluation>
+			</evaluations>
+			<actions>
+				<action type="Success" fqn="OneRing.Core.Actions.ExecuteRuleStep, OneRing.Core">
+					<parameters>
+						<parameter name="id" type="Static">2</parameter>
+					</parameters>
+				</action>
+				<action type="Failure" fqn="OneRing.Core.Actions.WebDisplayMessageAction, OneRing.Core">
+					<parameters>
+						<parameter name="element" type="Static">message_label</parameter>
+						<parameter name="template" type="Template">
+							<![CDATA[
+							There were errors submitting the form:<br />
+							##errors##
+						]]>
+						</parameter>
+					</parameters>
+				</action>
+			</actions>
+		</rule>
+		<rule id="2" sequence="2" name="Send Email">
+			<actions>
+				<action type="Success" fqn="OneRing.Core.Actions.SendEmailAction, OneRing.Core">
+					<parameters>
+						<parameter name="to" type="Static">ron.richardson@gmail.com</parameter>
+						<parameter name="from" type="FormField">email_textbox</parameter>
+						<parameter name="subject" type="Static">ron.richardson@gmail.com</parameter>
+						<parameter name="body" type="Template">
+							<![CDATA[
+							Message submitted from: ##email_textbox##<br />
+							Date/Time: ##DateTime.Now##<br />
+							First Name: ##fname_textbox##<br />
+							Last Name: ##lname_textbox##<br />
+						]]>
+						</parameter>
+					</parameters>
+				</action>
+				<action type="Failure" fqn="OneRing.Core.Actions.WebDisplayMessageAction, OneRing.Core">
+					<parameters>
+						<parameter name="element" type="Static">message_label</parameter>
+						<parameter name="template" type="Template">
+							<![CDATA[
+							There were errors submitting the form:<br />
+							##errors##
+						]]>
+						</parameter>
+					</parameters>
+				</action>
+			</actions>
+		</rule>
+	</rules>
+</onering>
